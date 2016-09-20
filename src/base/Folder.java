@@ -39,8 +39,11 @@ public class Folder implements Comparable<Folder>{
 
 	@Override
 	public int compareTo(Folder f){
-		
-			return 1;
+		return this.name.compareTo(f.name);
+	}
+	
+	public void sortNotes(){
+		Collections.sort(notes);
 	}
 	
 	@Override

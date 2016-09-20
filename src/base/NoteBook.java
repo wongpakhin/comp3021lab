@@ -44,6 +44,11 @@ public class NoteBook{
 	      f.addNote(note);
 	      return true;
 	    }
+	
+	public void sortFolders(){
+		folders.sortNotes();
+		
+	}
 }
 	
 

@@ -34,6 +34,8 @@ public class Note implements Comparable<Note>{
 			return 0;
 	}
 	
+	
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
