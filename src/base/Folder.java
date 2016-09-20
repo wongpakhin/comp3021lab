@@ -2,7 +2,7 @@ package base;
 import java.util.*;
 
 
-public class Folder {
+public class Folder implements Comparable<Folder>{
 	
 	private ArrayList<Note> notes;
 	private String name;
@@ -37,6 +37,11 @@ public class Folder {
 		return name + ":" + nText + ":" + nImage;
 	}
 
+	@Override
+	public int compareTo(Folder f){
+		
+			return 1;
+	}
 	
 	@Override
 	public int hashCode() {
