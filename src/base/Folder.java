@@ -37,14 +37,115 @@ public class Folder implements Comparable<Folder>{
 		return name + ":" + nText + ":" + nImage;
 	}
 
+	
+	
+	public void sortNotes(){
+		
+		Collections.sort(notes);
+		
+	}
+	
+	
+	public List<Note> searchNotes(String keywords){
+		
+		List<Note> result = new ArrayList<Note>();
+		String[] keywordsList = keywords.split(" ");
+
+		List<String> andArr = new ArrayList<>();
+		List<String> orArr  = new ArrayList<>();
+
+		for (int i =0 ; i< keywordsList.length ; i++){
+
+			if (keywordsList[i]!=null&&keywordsList[i].equalsIgnoreCase("or")){
+				orArr.add(keywordsList[i+1].toLowerCase());
+				orArr.add(keywordsList[i-1].toLowerCase()); 
+				keywordsList[i-1] = null;
+				keywordsList[i] = null;
+				keywordsList[i+1] = null;
+
+			}
+
+		}
+
+		for (String s : keywordsList){
+			if ( s != null )
+				andArr.add(s.toLowerCase());
+		}
+
+		for (Note n: notes){
+
+			boolean exist=false;
+			
+			if(n instanceof TextNote){
+				String testTitle = n.getTitle().toLowerCase();
+				String testContent = ((TextNote)n).getContent().toLowerCase();
+
+				for (String s : andArr){ //search title (and)
+					if (testTitle.contains(s))
+						exist = true;
+					else 
+						exist = false;
+				}
+
+				for (int j=0;j<orArr.size();j+=2){ 
+					if (testTitle.contains(orArr.get(j)) || testTitle.contains(orArr.get(j+1)))
+						exist = true;
+					else 
+						exist = false;
+
+				}
+
+				for (String s : andArr){ //search content
+					if (s!=null && testContent.contains(s))
+						exist = true;
+					else 
+						exist = false;
+
+				}
+
+				for (int j=0;j<orArr.size();j+=2){
+					if (testContent.contains(orArr.get(j))||testContent.contains(orArr.get(j+1)))
+						exist = true;
+					else 
+						exist = false;
+				}
+			}
+			else{
+
+				String testTitle = n.getTitle().toLowerCase();
+
+				for (String s: andArr){
+					if (testTitle.contains(s))
+						exist = true;
+					else 
+						exist = false;
+				}
+
+				for (int j=0;j<orArr.size();j+=2){
+					if (testTitle.contains(orArr.get(j)) || testTitle.contains(orArr.get(j+1)))
+						exist = true;
+					else 
+						exist = false;
+				} 
+
+			}
+			if (exist)
+				result.add(n);
+		}
+		return result;
+	}
+
+
+	
+	
+	
 	@Override
 	public int compareTo(Folder f){
 		return this.name.compareTo(f.name);
 	}
 	
-	public void sortNotes(){
-		Collections.sort(notes);
-	}
+	
+	
 	
 	@Override
 	public int hashCode() {
@@ -76,6 +177,5 @@ public class Folder implements Comparable<Folder>{
 			return false;
 		return true;
 	}
-	
 
 }

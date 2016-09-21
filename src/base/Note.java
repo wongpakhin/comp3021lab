@@ -15,7 +15,7 @@ public class Note implements Comparable<Note>{
 		return this.title;
 	}
 
-	  public boolean equals(Note inputNote){
+	public boolean equals(Note inputNote){
 
 		    if ( title.equals( inputNote.getTitle() ))
 		      return true;
@@ -27,9 +27,9 @@ public class Note implements Comparable<Note>{
 	@Override
 	public int compareTo(Note o){
 		if(this.date.before(o.date))
-			return -1;
-		else if(this.date.after(o.date))
 			return 1;
+		else if(this.date.after(o.date))
+			return -1;
 		else 
 			return 0;
 	}
@@ -59,5 +59,9 @@ public class Note implements Comparable<Note>{
 		} else if (!title.equals(other.title))
 			return false;
 		return true;
+	}
+	
+	public String toString(){
+		return date.toString()+ "\t" + title;
 	}
 }
