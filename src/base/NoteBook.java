@@ -1,13 +1,41 @@
 package base;
 import java.util.*;
 
-public class NoteBook{
+import java.io.Serializable;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
+public class NoteBook implements Serializable{
+	
+	private static final long serialVersionUID = 1L;   
 	private ArrayList<Folder> folders;
 
 	public NoteBook(){
 		folders = new ArrayList<Folder>();
 	}
+	
+	public NoteBook(String file){
+		// TODO
+		FileInputStream fis = null;   
+		ObjectInputStream in = null;
+		
+		try {
+				fis = new FileInputStream(file);  
+				in = new ObjectInputStream(fis);
+				NoteBook loadedObject = (NoteBook) in.readObject();   
+				this.folders = loadedObject.getFolders();   //load object into folder
+				in.close();   //close file
+				
+			} catch (Exception e) {
+				e.printStackTrace();     
+			}
+	
+		
+		
+		}
+	
 
 	public boolean createTextNote(String folderName,String title){
 		TextNote note =  new TextNote(title);
@@ -60,9 +88,6 @@ public class NoteBook{
 	}
 
 	
-	
-	
-	
 	public List<Note> searchNotes(String Keywords){
 		ArrayList<Note> result = new ArrayList<Note>();
 			for (Folder f: folders){
@@ -71,6 +96,29 @@ public class NoteBook{
 			}
 		return result;
 	}
+	
+	
+	public boolean save(String file){
+		//TODO
+			FileOutputStream fos = null;
+			ObjectOutputStream out = null;
+			
+			try {
+			//TODO
+				fos = new FileOutputStream(file);
+				out = new ObjectOutputStream(fos);
+				out.writeObject(this);
+				out.close();
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
+			
+		return true;
+		}
+	
+	
 }
 	
 
