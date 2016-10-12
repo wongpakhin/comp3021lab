@@ -1,182 +1,242 @@
 package base;
+
+import java.io.Serializable;
 import java.util.*;
-import java.io.*;
 
+public class Folder implements Comparable<Folder>, Serializable {
 
-public class Folder implements Comparable<Folder>,Serializable{
-	
 	private ArrayList<Note> notes;
 	private String name;
-	
-	public Folder(String name){
+	private static final long serialVersionUID = 1L;
+
+	public Folder(String name) {
+
 		this.name = name;
 		notes = new ArrayList<Note>();
+
 	}
-	
-	public void addNote(Note note){
-		notes.add(note);
+
+	public void addNote(Note newNote) {
+
+		notes.add(newNote);
+
 	}
-	
-	public String getName(){
+
+	public String getName() {
+
 		return this.name;
+
 	}
-	
-	public ArrayList<Note> getNotes(){
+
+	public ArrayList<Note> getNotes() {
+
 		return this.notes;
+
 	}
-	
-	public String toString(){
+
+	public String toString() {
+
 		int nText = 0;
 		int nImage = 0;
-		
-		for ( Note note : notes  ){
-			if ( note instanceof ImageNote )
-		        nImage +=1;
-			else if ( note instanceof TextNote )
-		        nText +=1;
-		    }
+
+		// TODO
+
+		for (Note note : notes) {
+
+			if (note instanceof TextNote)
+				nText++;
+			else if (note instanceof ImageNote)
+				nImage++;
+
+		}
+
 		return name + ":" + nText + ":" + nImage;
+
 	}
 
-	
-	
-	public void sortNotes(){
-		
-		Collections.sort(notes);
-		
+	public boolean equals(Object anotherObject) {
+
+		if (name.equals(((Folder) anotherObject).getName()))
+			return true;
+
+		return false;
+
 	}
-	
-	
-	public List<Note> searchNotes(String keywords){
-		
-		List<Note> result = new ArrayList<Note>();
-		String[] keywordsList = keywords.split(" ");
+
+	public int compareTo(Folder f) {
+
+		return name.compareTo(f.name);
+
+	}
+
+	public void sortNotes() {
+
+		Collections.sort(notes);
+
+	}
+
+	public List<Note> searchNotes(String keywords) {
+
+		List<Note> List_notes = new ArrayList<Note>();
+		String[] strSplit = keywords.split(" ", 0);
 
 		List<String> andArr = new ArrayList<>();
-		List<String> orArr  = new ArrayList<>();
+		List<String> orArr = new ArrayList<>();
 
-		for (int i =0 ; i< keywordsList.length ; i++){
+		int numofor = 0;
 
-			if (keywordsList[i]!=null&&keywordsList[i].equalsIgnoreCase("or")){
-				orArr.add(keywordsList[i+1].toLowerCase());
-				orArr.add(keywordsList[i-1].toLowerCase()); 
-				keywordsList[i-1] = null;
-				keywordsList[i] = null;
-				keywordsList[i+1] = null;
+		for (int i = 0; i < strSplit.length; i++) {
 
+			if (strSplit[i] != null && strSplit[i].equalsIgnoreCase("or")) {
+				numofor++;
 			}
 
 		}
 
-		for (String s : keywordsList){
-			if ( s != null )
-				andArr.add(s.toLowerCase());
-		}
+		if (numofor == ((strSplit.length - numofor) - 1)) {
 
-		for (Note n: notes){
+			for (String s : strSplit) {
 
-			boolean exist=false;
-			
-			if(n instanceof TextNote){
-				String testTitle = n.getTitle().toLowerCase();
-				String testContent = ((TextNote)n).getContent().toLowerCase();
-
-				for (String s : andArr){ //search title (and)
-					if (testTitle.contains(s))
-						exist = true;
-					else 
-						exist = false;
-				}
-
-				for (int j=0;j<orArr.size();j+=2){ 
-					if (testTitle.contains(orArr.get(j)) || testTitle.contains(orArr.get(j+1)))
-						exist = true;
-					else 
-						exist = false;
-
-				}
-
-				for (String s : andArr){ //search content
-					if (s!=null && testContent.contains(s))
-						exist = true;
-					else 
-						exist = false;
-
-				}
-
-				for (int j=0;j<orArr.size();j+=2){
-					if (testContent.contains(orArr.get(j))||testContent.contains(orArr.get(j+1)))
-						exist = true;
-					else 
-						exist = false;
-				}
-			}
-			else{
-
-				String testTitle = n.getTitle().toLowerCase();
-
-				for (String s: andArr){
-					if (testTitle.contains(s))
-						exist = true;
-					else 
-						exist = false;
-				}
-
-				for (int j=0;j<orArr.size();j+=2){
-					if (testTitle.contains(orArr.get(j)) || testTitle.contains(orArr.get(j+1)))
-						exist = true;
-					else 
-						exist = false;
-				} 
+				if (s != null && !(s.equalsIgnoreCase("or")))
+					orArr.add(s.toLowerCase());
 
 			}
-			if (exist)
-				result.add(n);
+			for (Note n : notes) {
+
+				boolean consistOfKeys = false;
+				boolean consistOfContent = false;
+				if (n instanceof ImageNote) {
+
+					String nTitle = n.getTitle().toLowerCase();
+
+					for (int j = 0; j < orArr.size(); j++) {
+
+						if (nTitle.contains(orArr.get(j)))
+							consistOfKeys = true;
+
+					}
+
+					consistOfContent = false;
+
+				} else if (n instanceof TextNote) {
+
+					String nTitle = n.getTitle().toLowerCase();
+					String nContent = ((TextNote) n).getContent().toLowerCase();
+
+					for (int j = 0; j < orArr.size(); j++) {
+
+						if (nTitle.contains(orArr.get(j)) )
+							consistOfKeys = true;
+
+					}
+
+
+					for (int j = 0; j < orArr.size(); j++) {
+
+						if (nContent.contains(orArr.get(j)))
+							consistOfContent = true;
+					}
+
+				}
+
+				if (consistOfKeys || consistOfContent)
+					List_notes.add(n);
+
+			}
+
+		} else {
+			for (int i = 0; i < strSplit.length; i++) {
+
+				if (strSplit[i] != null && strSplit[i].equalsIgnoreCase("or")) {
+
+					orArr.add(strSplit[i + 1].toLowerCase());
+					orArr.add(strSplit[i - 1].toLowerCase());
+					strSplit[i] = strSplit[i + 1] = strSplit[i - 1] = null;
+
+				}
+
+			}
+
+			for (String s : strSplit) {
+				if (s != null)
+					andArr.add(s.toLowerCase());
+			}
+
+			for (Note n : notes) {
+
+				boolean consistOfKeys = true;
+				boolean consistOfContent = true;
+				if (n instanceof ImageNote) {
+
+					String nTitle = n.getTitle().toLowerCase();
+
+					for (String s : andArr) {
+						if (nTitle.contains(s))
+							;
+						else
+							consistOfKeys = false;
+					}
+
+					for (int j = 0; j < orArr.size(); j += 2) {
+
+						if (nTitle.contains(orArr.get(j))
+								|| nTitle.contains(orArr.get(j + 1)))
+							;
+						else
+							consistOfKeys = false;
+
+					}
+
+					consistOfContent = false;
+
+				} else if (n instanceof TextNote) {
+
+					String nTitle = n.getTitle().toLowerCase();
+					String nContent = ((TextNote) n).getContent().toLowerCase();
+
+					for (String s : andArr) {
+						if (nTitle.contains(s))
+							;
+						else
+							consistOfKeys = false;
+					}
+
+					for (int j = 0; j < orArr.size(); j += 2) {
+
+						if (nTitle.contains(orArr.get(j))
+								|| nTitle.contains(orArr.get(j + 1)))
+							;
+						else
+							consistOfKeys = false;
+
+					}
+
+					for (String s : andArr) {
+
+						if (s != null && nContent.contains(s))
+							;
+						else
+							consistOfContent = false;
+
+					}
+
+					for (int j = 0; j < orArr.size(); j += 2) {
+
+						if (nContent.contains(orArr.get(j))
+								|| nContent.contains(orArr.get(j + 1)))
+							;
+						else
+							consistOfContent = false;
+					}
+
+				}
+
+				if (consistOfKeys || consistOfContent)
+					List_notes.add(n);
+
+			}
 		}
-		return result;
-	}
-
-
-	
-	
-	
-	@Override
-	public int compareTo(Folder f){
-		return this.name.compareTo(f.name);
-	}
-	
-	
-	
-	
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((notes == null) ? 0 : notes.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Folder other = (Folder) obj;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		if (notes == null) {
-			if (other.notes != null)
-				return false;
-		} else if (!notes.equals(other.notes))
-			return false;
-		return true;
+		return List_notes;
 	}
 
 }
