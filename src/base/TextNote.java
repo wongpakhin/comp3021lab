@@ -112,7 +112,9 @@ public class TextNote extends Note implements Serializable{
 		return r;
 	}
 	
-	
+	public void setContent(String content) {
+		this.content = content;
+	}
 	
 }
 
